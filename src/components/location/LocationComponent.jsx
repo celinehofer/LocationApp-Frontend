@@ -10,10 +10,11 @@ class LocationComponent extends Component {
 
         this.state = {
             id: this.props.match.params.id,
+            title: "",
             description: "",
             targetDate: moment(new Date()).format('YYYY-MM-DD'),
             image: "",
-            imagePreview: ""
+            /*  imagePreview: "" */
         };
 
         this.onSubmit = this.onSubmit.bind(this);
@@ -28,6 +29,7 @@ class LocationComponent extends Component {
         let username = AuthenticationService.getLoggedInUserName();
         LocationDataService.retrieveLocation(username, this.state.id)
             .then(response => this.setState({
+                title: response.data.title,
                 description: response.data.description,
                 targetDate: moment(response.data.targetDate).format('YYYY-MM-DD')
             }
@@ -36,16 +38,20 @@ class LocationComponent extends Component {
 
     validate(values) {
         let errors = {};
+        if (!values.title) {
+            errors.title = 'Enter a Title';
+        } else if (values.title.length < 5) {
+            errors.title = 'Enter atleast 5 characters in title';
+        }
         if (!values.description) {
-            errors.description = 'Enter a Description';
-        } else if (values.description.length < 5) {
-            errors.description = 'Enter atleast 5 Characters in Description';
+            errors.description = 'Enter a description';
+        } else if (values.description.length < 10) {
+            errors.description = 'Enter atleast 10 characters in description';
         }
-
+        
         if (!moment(values.targetDate).isValid()) {
-            errors.targetDate = 'Enter a valid Target Date';
+            errors.targetDate = 'Enter a valid target date';
         }
-
         console.log(values);
         return errors;
     }
@@ -59,13 +65,13 @@ class LocationComponent extends Component {
 
         console.log("Image", file)
 
-        reader.onloaded = () => {
+        reader.onloadend = () => {
             this.setState({
                 image: file,
-                imagePreview: reader.result
+                /*     imagePreview: reader.result */
             })
         }
-       reader.readAsDataURL(file)
+        reader.readAsDataURL(file)
     }
 
     onSubmit(values) {
@@ -73,6 +79,7 @@ class LocationComponent extends Component {
 
         let location = {
             id: this.state.id,
+            title: values.title,
             description: values.description,
             targetDate: values.targetDate
         };
@@ -81,42 +88,48 @@ class LocationComponent extends Component {
             LocationDataService.createLocation(username, location).then(() => this.props.history.push('/locations')
             );
         } else {
+
             LocationDataService.updateLocation(username, this.state.id, location).then(() => this.props.history.push('/locations')
             );
             console.log(values);
         }
     }
 
-    // uploadLocation(id){
-    //     customBtn.addEventListener("click", function(){
-    //         realFileBtn.click();
-    //     });
-
-    //     realFileBtn.addEventListener("change", function(){
-    //         if(realFileBtn.value) {
-    //             customTxt.innerHTML = realFielBrn.value;
-    //         } else "no Picture chosen"
-    //     })
-    // }
+            /*  let formData = new FormData();
+            if ( this.state.id !== "" || this.state.id !== null) {
+                formData.append("id", this.state.id)
+            }
+            formData("description", values.description)
+            formData("targetDate", values.targetDate)
+            formData("image", this.state.image)
+    
+            if (this.state.id === -1) {
+                LocationDataService.createLocation(username, formData).then(() => this.props.history.push('/locations')
+                );
+            } else {
+                LocationDataService.updateLocation(username, formData).then(() => this.props.history.push('/locations')
+                );
+                console.log(values);
+            }
+        } */
 
     render() {
-        let { description, targetDate, image } = this.state;
-
-        let { imagePreview } = this.state
-        let $imagePreview = null
-
-        if (imagePreview) {
-            $imagePreview = <img src={imagePreview} />
-        } else {
-            $imagePreview = <div> </div>
-        }
-
+        let { title, description, targetDate, image } = this.state;
+        /* let { description, targetDate, image, imagePreview  } = this.state; */
+        /*         let $imagePreview = null
+        
+                if (imagePreview) {
+                    $imagePreview = <img src={imagePreview} />;
+                } else {
+                    $imagePreview = <div>test</div>;
+                }
+         */
         return (
-            <div>
+            <div>§
                 <h1>Location</h1>
                 <div className="container">
                     <Formik
-                        initialValues={{ description, targetDate, image }}
+                        initialValues={{ title, description, targetDate, image }}
                         onSubmit={this.onSubmit}
                         validateOnChange={false}
                         validateOnBlur={false}
@@ -125,9 +138,14 @@ class LocationComponent extends Component {
                     >
                         {props => (
                             <Form>
+                                <ErrorMessage name="title" component="div" className="alert alert-warning" />
                                 <ErrorMessage name="description" component="div" className="alert alert-warning" />
                                 <ErrorMessage name="targetDate" component="div" className="alert alert-warning" />
-                               <fieldset className="form-group">
+                                <fieldset className="form-group">
+                                    <label>Title</label>
+                                    <Field className="form-control" type="text" name="title" />
+                                </fieldset>
+                                <fieldset className="form-group">
                                     <label>Description</label>
                                     <Field className="form-control" type="text" name="description" />
                                 </fieldset>
@@ -137,14 +155,17 @@ class LocationComponent extends Component {
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Image</label>
-                                    <Field className="form-control" type="file" name="image" onChange={(e) => this._handleImage(e)}/>
-                                    <div>{$imagePreview}</div>
+                                    <Field className="form-control" type="file" name="image" onChange={(e) => this._handleImage(e)} />
                                 </fieldset>
                                 <button className="btn btn-success" type="submit">Save</button>
                             </Form>
                         )}
                     </Formik>
+
+
                 </div>
+                {/*  <div>{$imagePreview}</div> */}
+
             </div>
         );
     }

@@ -13,3 +13,5 @@ class AuthenticatedRoute extends Component {
     }
 }
 export default AuthenticatedRoute;
+
+//isUserLoggedIn

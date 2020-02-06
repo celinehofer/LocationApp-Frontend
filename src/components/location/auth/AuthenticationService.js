@@ -5,7 +5,6 @@ class AuthenticationService {
 
     
     executeJwtAuthenticationService(username, password) {
-        console.log("HALOOOOO,", username, password)    
         return axios.post('http://localhost:8080/authenticate', {
             username, 
             password

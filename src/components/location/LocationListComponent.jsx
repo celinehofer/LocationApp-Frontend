@@ -9,15 +9,7 @@ class LocationListComponent extends Component {
         super(props)
         this.state = {
             locations: [],
-            message: null
         };
-    //    this.state = {
-    //         locations: [
-    //             {id: 1, title: "Bern", description: 'nice city with bears', targetDate: new Date()},
-    //             {id: 2, title: "Galway", description: 'best place to live ', targetDate: new Date()},
-    //             {id: 3, title: "Amsterdam", description: 'whatever you can do there', targetDate: new Date()}
-    //         ]
-    //     }
 
         this.deleteLocationClicked = this.deleteLocationClicked.bind(this);
         this.updateLocationClicked = this.updateLocationClicked.bind(this);
@@ -46,7 +38,9 @@ class LocationListComponent extends Component {
         let username = AuthenticationService.getLoggedInUserName();
         LocationDataService.retrieveAllLocations(username).then(response => {
             this.setState({ locations: response.data });
-        });
+        }).catch(response => {
+            console.log('refresh failed')
+        })
     }
 
     deleteLocationClicked(id) {
@@ -54,52 +48,48 @@ class LocationListComponent extends Component {
         LocationDataService.deleteLocation(username, id).then(response => {
             this.setState({ message: `Delete of location ${id} Successful` });
             this.refreshLocations();
-        });
+        }).catch(response => {
+            console.log("delete failed")
+        })
     }
- 
+
     addLocationClicked() {
         this.props.history.push(`/locations/-1`);
     }
 
     updateLocationClicked(id) {
-        console.log("update " + id);
-        this.props.history.push(`/locations/${id}`);
+       this.props.history.push(`/locations/${id}`);
     }
 
-        
+
     render() {
-        console.log("render");
         return (
-            <div>
-                <h1>List of Locations</h1>
+            <div className="locationList m-3">
+                <h2 className="title">List of Locations</h2>
+                <button className="btn btn-success" onClick={this.addLocationClicked}>Add new Location</button>
                 {this.state.message && (<div class="alert alert-success">{this.state.message}</div>
                 )}
-                <div className="container">
-                    <table className="table">
-                    <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Target Date</th>
-                                <th>Update</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.locations.map(
-                                location => (
-                                    <tr key={location.id}>
-                                        <td>{location.description}</td>
-                                        <td>{moment(location.targetDate).format("YYYY-MM-DD")}</td>
-                                        <td><button className="btn btn-success" onClick={() => this.updateTodoClicked(location.id)}>Update</button></td>
-                                        <td><button className="btn btn-warning" onClick={() => this.deleteTodoClicked(location.id)}>Delete</button></td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                    <div>
-                        <button className="btn btn-success" onClick={this.addLocationClicked}>Add new Location</button>
-                    </div>
-                </div>
+                <table>                     
+                    <tbody className="card">
+                        {this.state.locations.map(location => (
+                            <div className="card header" key={location.id}>
+                                <img className="card-img-top" src="slieveLeague.jpg" align="center"/>
+                                <div className="card-body vertical">
+                                    <div><h2 className="card-title mb-2">{location.title}</h2></div>
+                                <div className="padding-text"><p className="card-text-padding">{location.description}</p></div>
+
+                                <div className="bottom-card">
+                                    <div className="card-text mb-2 date">{moment(location.targetDate).format("YYYY-MM-DD")} - {location.username}</div>
+                                     </div>
+                                    <div className="btn-align">
+                                        <span><button className="btn btn-success btn-lg" onClick={() => this.updateLocationClicked(location.id)}>Update</button></span>
+                                        <span><button className="btn btn-danger btn-lg" onClick={() => this.deleteLocationClicked(location.id)}>Delete</button></span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         );
     }

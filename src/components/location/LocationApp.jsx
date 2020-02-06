@@ -18,7 +18,7 @@ class LocationApp extends Component {
                     <Switch>
                         <Route path="/" exact component={LoginComponent} />
                         <Route path="/login" component={LoginComponent} />
-                        <AuthenticatedRoute path="/welcome/:name" component={WelcomeComponent} />
+                        <AuthenticatedRoute path="/welcome/" component={WelcomeComponent} />
                         <AuthenticatedRoute path="/locations/:id" component={LocationComponent} />
                         <AuthenticatedRoute path="/locations" component={LocationListComponent} />
                         <Route component={ErrorComponent} />

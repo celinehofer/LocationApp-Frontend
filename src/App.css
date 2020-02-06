@@ -31,15 +31,6 @@
 .card{
 text-align: center;
 }
-/*
-.btn-success{
-  background-color: deeppink;
-}
-
-.btn-warning{
-  background-color: purple;
-}
-*/
 
 .title{
   font-size: xx-large;
@@ -57,4 +48,14 @@ text-align: center;
   to {
     transform: rotate(360deg);
   }
+}
+
+.card {
+  float: none; 
+  margin: 100px;
+}
+
+
+.card-body{
+  background-color: #d3d3d3;
 }
